@@ -17,25 +17,22 @@ public class MemberStoreLogic implements MemberStore{
 
 	@Override
 	public int updateMember(SqlSession session, MemberVO member) {
-		// TODO Auto-generated method stub
-		return 0;
+		return session.update("MemberMapper.updateMember",member);
 	}
 
 	@Override
 	public int deleteMember(SqlSession session, String memberId) {
-		// TODO Auto-generated method stub
-		return 0;
+		return session.delete("MemberMapper.deleteMember",memberId);
 	}
 
 	@Override
 	public MemberVO selectOneByLogin(SqlSession session, MemberVO member) {
-		return session.selectOne("MemberMapper.selectOneById",member);
+		return session.selectOne("MemberMapper.selectOneByLogin",member);
 	}
 
 	@Override
 	public MemberVO selectOneById(SqlSession session, String memberId) {
-		// TODO Auto-generated method stub
-		return null;
+		return session.selectOne("MemberMapper.selectOneById",memberId);
 	}
 
 }

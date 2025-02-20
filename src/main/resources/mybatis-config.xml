@@ -13,12 +13,18 @@
 			</environment>
 		</environments>
 	 -->
+	 <settings>
+	 	<!-- NULL일 때, NULL로 인식하도록 함 -->
+	 	<setting name="jdbcTypeForNull" value="NULL"/>
+	 </settings>
 	 <!-- VO가 만들어질 때마다 추가 -->
 	 <typeAliases>
 	 	<typeAlias type="com.dec.spring.member.domain.MemberVO" alias="Member"/>
+	 	<typeAlias type="com.dec.spring.notice.domain.NoticeVO" alias="Notice"/>
 	 </typeAliases>
 	 <!-- mapper.xml 만들어질 때마다 추가 -->
 	 <mappers>
 	 	<mapper resource="mappers/member-mapper.xml"/>
+	 	<mapper resource="mappers/notice-mapper.xml"/>
 	 </mappers>
 </configuration>

@@ -23,4 +23,19 @@
 		<constructor-arg ref="sqlSessionFactory"></constructor-arg>
 	</bean>
 	
+	<!-- 
+		파일 업로드 관련 설정
+	 -->
+	 <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	 	<!-- 
+	 		1MB = 1000000B, 1GB = 1000000000B, 1TB = 1000000000000B
+	 		8K = 8000, 10K = 1억  
+	 	-->
+	 	<property name="maxUploadSize" value="100000000"></property>
+	 	<!-- 
+	 		maxUploadSize: 한 요청당 업로드가 허용되는 최대 용량을 바이트 단위로 설정, -1하면 제한 없음
+	 		maxUploadSizePerFile: 한 파일당 업로드가 허용되는 최대 용량을 바이트 단위로 설정, -1하면 제한 없음.
+	 		maxInMemorySize: 디스크에 저장하지 않고 메모리에 유지하도록 허용하는 용량을 바이트 단위로 설정
+	 	 -->
+	 </bean>
 </beans>

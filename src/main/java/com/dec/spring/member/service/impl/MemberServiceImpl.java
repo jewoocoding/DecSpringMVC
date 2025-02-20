@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.dec.spring.member.domain.MemberVO;
 import com.dec.spring.member.service.MemberService;
 import com.dec.spring.member.store.MemberStore;
-import com.dec.spring.member.store.impl.MemberStoreLogic;
 
 @Service
 public class MemberServiceImpl implements MemberService{
@@ -27,12 +26,12 @@ public class MemberServiceImpl implements MemberService{
 
 	@Override
 	public int updateMember(MemberVO member) {
-		return 0;
+		return mStore.updateMember(session, member);
 	}
 
 	@Override
 	public int deleteMember(String memberId) {
-		return 0;
+		return mStore.deleteMember(session, memberId);
 	}
 
 	@Override
@@ -43,7 +42,7 @@ public class MemberServiceImpl implements MemberService{
 
 	@Override
 	public MemberVO selectOneById(String memberId) {
-		return null;
+		return mStore.selectOneById(session, memberId);
 	}
 
 }

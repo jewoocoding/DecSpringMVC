@@ -3,10 +3,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+	<meta charset="UTF-8">
+	<title>스프링 - 에러페이지</title>
 </head>
 <body>
-
+	<h1>에러메시지</h1>
+	<h2>${errorMsg }</h2>
 </body>
 </html>
