@@ -18,6 +18,19 @@ public class NoticeVO {
 	private String noticeYn;
 	private MultipartFile uploadFile;
 	
+	public NoticeVO () {}
+	
+	public NoticeVO(int noticeNo, String noticeSubject, String noticeContent, String noticeFilename,
+			String noticeFileRename, String noticeFilepath) {
+		super();
+		this.noticeNo = noticeNo;
+		this.noticeSubject = noticeSubject;
+		this.noticeContent = noticeContent;
+		this.noticeFilename = noticeFilename;
+		this.noticeFileRename = noticeFileRename;
+		this.noticeFilepath = noticeFilepath;
+	}
+
 	public NoticeVO(String noticeSubject, String noticeContent, String noticeWriter) {
 		super();
 		this.noticeSubject = noticeSubject;
