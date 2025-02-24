@@ -3,7 +3,9 @@ package com.dec.spring.notice.controller;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
@@ -11,7 +13,10 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +26,7 @@ import com.dec.spring.notice.domain.NoticeVO;
 import com.dec.spring.notice.service.NoticeService;
 
 @Controller
+@RequestMapping("/notice")
 public class NoticeController {
 	
 	private NoticeService nService;
@@ -31,12 +37,14 @@ public class NoticeController {
 		this.nService = nService;
 	}
 	
-	@RequestMapping(value="/notice/insert", method=RequestMethod.GET)
+//	@RequestMapping(value="/insert", method=RequestMethod.GET)
+	@GetMapping("/insert")
 	public String showNoticeForm() {
 		return "notice/insert";
 	}
 	
-	@RequestMapping(value="/notice/insert", method=RequestMethod.POST)
+//	@RequestMapping(value="/insert", method=RequestMethod.POST)
+	@PostMapping("/insert")
 	public String noticeInsert(@RequestParam("noticeSubject") String noticeSubject,
 								@RequestParam("noticeContent") String noticeContent,
 								@RequestParam("uploadFile") MultipartFile uploadFile,
@@ -86,7 +94,8 @@ public class NoticeController {
 	}
 	
 	// @RequestMapping - > defaultValue: 값이 전달이 안 되었을 때 default값을 지정해줄 수 있음.
-	@RequestMapping(value="/notice/list", method=RequestMethod.GET)
+//	@RequestMapping(value="/list", method=RequestMethod.GET)
+	@GetMapping("/list")
 	public String showNoticeList(Model model
 								,@RequestParam(value="page",defaultValue = "1") int currentPage) {
 		
@@ -129,7 +138,8 @@ public class NoticeController {
 		}
 	}
 	
-	@RequestMapping(value="/notice/detail", method=RequestMethod.GET)
+//	@RequestMapping(value="/detail", method=RequestMethod.GET)
+	@GetMapping("/detail")
 	public String showNoticeDetail(Model model
 									, @RequestParam("noticeNo") int noticeNo) {
 		
@@ -145,7 +155,8 @@ public class NoticeController {
 		
 	}
 	
-	@RequestMapping(value="/notice/update", method=RequestMethod.GET)
+//	@RequestMapping(value="/update", method=RequestMethod.GET)
+	@GetMapping("/update")
 	public String showModifyForm(@RequestParam("noticeNo") int noticeNo
 			, Model model) {
 		try {
@@ -160,7 +171,8 @@ public class NoticeController {
 		
 	}
 	
-	@RequestMapping(value="/notice/update", method=RequestMethod.POST)
+//	@RequestMapping(value="/update", method=RequestMethod.POST)
+	@PostMapping("/update")
 	public String updateNotice(@RequestParam("noticeNo") int noticeNo
 			,@RequestParam("noticeSubject") String noticeSubject
 			,@RequestParam("noticeContent") String noticeContent
@@ -198,7 +210,8 @@ public class NoticeController {
 		}
 	}
 	
-	@RequestMapping(value="/notice/delete", method=RequestMethod.GET)
+//	@RequestMapping(value="/delete", method=RequestMethod.GET)
+	@GetMapping("/delete")
 	public String deleteNotice(Model model
 			,@RequestParam("noticeNo") int noticeNo) {
 		
@@ -215,5 +228,47 @@ public class NoticeController {
 			model.addAttribute("errorMsg",e.getMessage());
 			return "common/error";
 		}
+	}
+	
+//	@RequestMapping(value="/search", method=RequestMethod.GET)
+	@GetMapping("/search")
+	public String showSearchList(Model model
+								,@RequestParam("searchCondition") String searchCondition
+								,@RequestParam("searchKeyword") String searchKeyword
+								,@RequestParam(value="page", defaultValue="1") int currentPage) {
+		try {
+			// 1. VO 만들기
+			// SearchVO search = new SearchVO(searchCondition, searchKeyword);
+			// 2. HashMap 사용하기
+			Map<String, String> paramMap = new HashMap<>();
+			paramMap.put("searchCondition", searchCondition);
+			paramMap.put("searchKeyword", searchKeyword);
+			List<NoticeVO> searchList = nService.searchListByKeyword(paramMap, currentPage);
+			
+			// pagenation
+			int totalCount = nService.getSearchCount(paramMap);
+			int borderLimit = 10;
+			int naviLimit = 5;
+			int startNavi = (currentPage-1)/naviLimit*naviLimit +1;
+			int endNavi = startNavi + naviLimit - 1;
+			int maxPage = totalCount % borderLimit == 0 ? totalCount/borderLimit : totalCount/borderLimit+1;
+			
+			if(endNavi > maxPage)
+				endNavi = maxPage;
+			
+			model.addAttribute("startNavi",startNavi);
+			model.addAttribute("endNavi",endNavi);
+			model.addAttribute("maxPage",maxPage);		
+			model.addAttribute("searchList",searchList);
+			model.addAttribute("searchCondition", searchCondition);
+			model.addAttribute("searchKeyword", searchKeyword);
+			
+			return "notice/search";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg",e.getMessage());
+			return "common/error";
+		}
+		
 	}
 }

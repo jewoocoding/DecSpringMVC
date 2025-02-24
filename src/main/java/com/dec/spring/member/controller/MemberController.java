@@ -7,14 +7,21 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.dec.spring.member.controller.dto.JoinRequest;
+import com.dec.spring.member.controller.dto.LoginRequest;
+import com.dec.spring.member.controller.dto.ModifyRequest;
 import com.dec.spring.member.domain.MemberVO;
 import com.dec.spring.member.service.MemberService;
 
 @Controller
+@RequestMapping("/member")
 public class MemberController {
 	
 	@Autowired
@@ -28,13 +35,17 @@ public class MemberController {
 	}
 	
 	// 회원 로그인
-	@RequestMapping(value="/member/login", method=RequestMethod.POST)
-	public String memberLogin(@RequestParam("memberId") String memberId,
-							@RequestParam("memberPw") String memberPw
-							, HttpSession session, Model model) {
+	// @RequestMapping(value="/login", method=RequestMethod.POST)
+	@PostMapping("/login")
+	public String memberLogin(
+			@ModelAttribute LoginRequest memberLogin
+//			@RequestParam("memberId") String memberId,
+//			@RequestParam("memberPw") String memberPw
+			, HttpSession session, Model model) {
 		try {
-			MemberVO member = new MemberVO(memberId, memberPw);
-			member = mService.selectOneByLogin(member);
+//			LoginRequest memberLogin = new LoginRequest(memberId, memberPw);
+//			MemberVO member = new MemberVO(memberId, memberPw);
+			MemberVO member = mService.selectOneByLogin(memberLogin);
 			if(member != null) {
 				// 로그인 성공 후 세션에 정보 저장
 				// HttpSession session = request.getSession();
@@ -53,7 +64,8 @@ public class MemberController {
 	}
 
 	// 회원 로그아웃
-	@RequestMapping(value="/member/logout", method=RequestMethod.GET)
+	// @RequestMapping(value="/logout", method=RequestMethod.GET)
+	@GetMapping("/logout")
 	public String memberLogout(HttpSession session) {
 		if(session != null) {
 			session.invalidate();
@@ -62,22 +74,27 @@ public class MemberController {
 	}
 	
 	// 회원가입 페이지로 이동
-	@RequestMapping(value="/member/insert",method=RequestMethod.GET)
+//	@RequestMapping(value="/insert",method=RequestMethod.GET)
+	@GetMapping("/insert")
 	public String memberInsertForm() {
 		return "member/insert";
 	}
 	
 	// 회원가입
-	@RequestMapping(value="/member/insert", method=RequestMethod.POST)
+//	@RequestMapping(value="/insert", method=RequestMethod.POST)
+	@PostMapping("/insert")
 	public String memberInsert(
-			@RequestParam("memberId") String memberId,
-			@RequestParam("memberPw") String memberPw,
-			@RequestParam("memberName") String memberName,
-			@RequestParam("memberAge") int memberAge,
-			@RequestParam("memberGender") String memberGender,
-			@RequestParam("memberEmail") String memberEmail,
-			@RequestParam("memberPhone") String memberPhone,
-			@RequestParam("memberAddress") String memberAddress,
+			// 주의!! jsp의 form태그에 있는 input태그의 name값이 
+			// dto의 필드명과 같아야 사용할 수 있음!
+			@ModelAttribute JoinRequest member,
+//			@RequestParam("memberId") String memberId,
+//			@RequestParam("memberPw") String memberPw,
+//			@RequestParam("memberName") String memberName,
+//			@RequestParam("memberAge") int memberAge,
+//			@RequestParam("memberGender") String memberGender,
+//			@RequestParam("memberEmail") String memberEmail,
+//			@RequestParam("memberPhone") String memberPhone,
+//			@RequestParam("memberAddress") String memberAddress,
 			HttpServletRequest request, HttpServletResponse response) {
 //		String memberId = request.getParameter("memberId");
 //		String memberPw = request.getParameter("memberPw");
@@ -88,7 +105,7 @@ public class MemberController {
 //		String memberPhone = request.getParameter("memberPhone");
 //		String memberAddress = request.getParameter("memberAddress");
 		
-		MemberVO member = new MemberVO(memberId, memberPw, memberName, memberAge, memberGender, memberEmail, memberPhone, memberAddress);
+//		JoinRequest member = new JoinRequest(memberId, memberPw, memberName, memberAge, memberGender, memberEmail, memberPhone, memberAddress);
 		// MemberServiceImpl mService = new MemberServiceImpl(); -> 강한 결합
 		// MemberService mService = new MemberServiceImpl(); -> 의존성 주입X
 		int result = mService.insertMember(member);
@@ -105,7 +122,8 @@ public class MemberController {
 	}
 	
 	// 마이페이지로 이동
-	@RequestMapping(value="/member/detail", method=RequestMethod.GET)
+//	@RequestMapping(value="/detail", method=RequestMethod.GET)
+	@GetMapping("/detail")
 	public String memberMyPage(HttpSession session, Model model) {
 		try {
 			String memberId = (String)session.getAttribute("memberId");
@@ -114,7 +132,7 @@ public class MemberController {
 				// request.setAttribute("member",member);
 				model.addAttribute("member", member);
 				model.addAttribute("errorMsg","존재하지 않는 정보입니다.");
-				// request.getRequestDispatcher("/WEB-INF/views/member/detail.jsp").forward(request,response);
+				// request.getRequestDispatcher("/WEB-INF/views/detail.jsp").forward(request,response);
 				return "member/detail";
 			}else {
 				return "common/error";
@@ -127,7 +145,8 @@ public class MemberController {
 	}
 
 	// 회원정보 수정페이지로 이동
-	@RequestMapping(value="/member/update", method = RequestMethod.GET)
+//	@RequestMapping(value="/update", method = RequestMethod.GET)
+	@GetMapping("/update")
 	public String memberUpdateForm(HttpSession session, Model model) {
 		try {
 			// 세션에서 아이디 가져오기
@@ -149,15 +168,17 @@ public class MemberController {
 	}
 
 	// 회원정보 수정
-	@RequestMapping(value="/member/update", method = RequestMethod.POST)
-	public String memberUpdate(@RequestParam("memberId") String memberId,
-								@RequestParam("memberPw") String memberPw,
-								@RequestParam("memberEmail") String memberEmail,
-								@RequestParam("memberPhone") String memberPhone,
-								@RequestParam("memberAddress") String memberAddress,
-								Model model) {
+//	@RequestMapping(value="/update", method = RequestMethod.POST)
+	@PostMapping("/update")
+	public String memberUpdate(@ModelAttribute ModifyRequest member,
+//			@RequestParam("memberId") String memberId,
+//			@RequestParam("memberPw") String memberPw,
+//			@RequestParam("memberEmail") String memberEmail,
+//			@RequestParam("memberPhone") String memberPhone,
+//			@RequestParam("memberAddress") String memberAddress,
+			Model model) {
 		try {
-			MemberVO member = new MemberVO(memberId, memberPw, memberEmail, memberPhone, memberAddress);
+//			ModifyRequest member = new ModifyRequest(memberId, memberPw, memberEmail, memberPhone, memberAddress);
 			int result = mService.updateMember(member);
 			if(result > 0 ) {
 				// 마이페이지로 이동
@@ -176,7 +197,8 @@ public class MemberController {
 	}
 
 	// 회원 탈퇴
-	@RequestMapping(value="/member/delete")
+//	@RequestMapping(value="/delete")
+	@GetMapping("/delete")
 	public String memberDelete(HttpSession session, Model model) {
 		// 회원 탈퇴 진행하고 로그아웃해서 메인으로 이동하도록 해야함.
 		String memberId = (String)session.getAttribute("memberId");

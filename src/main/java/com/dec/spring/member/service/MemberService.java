@@ -1,5 +1,8 @@
 package com.dec.spring.member.service;
 
+import com.dec.spring.member.controller.dto.JoinRequest;
+import com.dec.spring.member.controller.dto.LoginRequest;
+import com.dec.spring.member.controller.dto.ModifyRequest;
 import com.dec.spring.member.domain.MemberVO;
 
 public interface MemberService {
@@ -9,14 +12,14 @@ public interface MemberService {
 	 * @param MemberVO
 	 * @return int
 	 */
-	int insertMember(MemberVO member);
+	int insertMember(JoinRequest member);
 	
 	/**
 	 * 회원 정보 수정 Service
 	 * @param MemberVO
 	 * @return int
 	 */
-	int updateMember(MemberVO member);
+	int updateMember(ModifyRequest member);
 	
 	/**
 	 * 회원 정보 삭제 Service
@@ -30,7 +33,7 @@ public interface MemberService {
 	 * @param MemberVO
 	 * @return MemberVO 
 	 */
-	MemberVO selectOneByLogin(MemberVO member);
+	MemberVO selectOneByLogin(LoginRequest memberLogin);
 	
 	/**
 	 * 회원 아이디로 조회 Service

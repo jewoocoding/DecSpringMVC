@@ -13,7 +13,7 @@
 		ID : <input type="text" name="memberId"> <br>
 		PW : <input type="password" name="memberPw"> <br>
 		NAME : <input type="text" name="memberName"> <br>
-		AGE : <input type="text" name="memberAge"> <br>
+		AGE : <input type="number" name="memberAge"> <br>
 		GENDER : <input type="text" name="memberGender"> <br>
 		EMAIL : <input type="text" name="memberEmail"> <br>
 		PHONE : <input type="text" name="memberPhone"> <br>

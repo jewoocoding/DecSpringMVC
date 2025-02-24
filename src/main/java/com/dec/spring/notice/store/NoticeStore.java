@@ -1,6 +1,7 @@
 package com.dec.spring.notice.store;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -19,5 +20,9 @@ public interface NoticeStore {
 	int updateNotice(SqlSession session, NoticeVO notice);
 
 	int deleteNotice(SqlSession session, int noticeNo);
+
+	List<NoticeVO> searchListByKeyword(SqlSession session, Map<String, String> paramMap, int currentPage);
+
+	int getSearchCount(SqlSession session, Map<String, String> paramMap);
 
 }

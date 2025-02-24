@@ -1,6 +1,7 @@
 package com.dec.spring.notice.store.logic;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
@@ -47,6 +48,19 @@ public class NoticeStoreLogic implements NoticeStore{
 	@Override
 	public int deleteNotice(SqlSession session, int noticeNo) {
 		return session.update("NoticeMapper.deleteNotice", noticeNo);
+	}
+
+	@Override
+	public List<NoticeVO> searchListByKeyword(SqlSession session, Map<String, String> paramMap, int currentPage) {
+		int limit = 10;
+		int offset = (currentPage-1)*limit;
+		RowBounds rowBound = new RowBounds(offset, limit);
+		return session.selectList("NoticeMapper.searchListByKeyword",paramMap, rowBound);
+	}
+
+	@Override
+	public int getSearchCount(SqlSession session, Map<String, String> paramMap) {
+		return session.selectOne("NoticeMapper.getSearchCount",paramMap);
 	}
 	
 }
