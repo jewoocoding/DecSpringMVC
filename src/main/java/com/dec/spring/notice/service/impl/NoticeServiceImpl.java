@@ -7,6 +7,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dec.spring.notice.controller.dto.NoticeAddRequest;
+import com.dec.spring.notice.controller.dto.NoticeModifyRequest;
 import com.dec.spring.notice.domain.NoticeVO;
 import com.dec.spring.notice.service.NoticeService;
 import com.dec.spring.notice.store.NoticeStore;
@@ -24,7 +26,7 @@ public class NoticeServiceImpl implements NoticeService{
 	}
 	
 	@Override
-	public int insertNotice(NoticeVO notice) {
+	public int insertNotice(NoticeAddRequest notice) {
 		return nStore.insertNotice(session, notice);
 	}
 
@@ -44,7 +46,7 @@ public class NoticeServiceImpl implements NoticeService{
 	}
 
 	@Override
-	public int updateNotice(NoticeVO notice) {
+	public int updateNotice(NoticeModifyRequest notice) {
 		return nStore.updateNotice(session, notice);
 	}
 

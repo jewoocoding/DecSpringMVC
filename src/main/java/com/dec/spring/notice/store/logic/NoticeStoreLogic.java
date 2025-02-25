@@ -7,6 +7,8 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import com.dec.spring.notice.controller.dto.NoticeAddRequest;
+import com.dec.spring.notice.controller.dto.NoticeModifyRequest;
 import com.dec.spring.notice.domain.NoticeVO;
 import com.dec.spring.notice.store.NoticeStore;
 
@@ -14,7 +16,7 @@ import com.dec.spring.notice.store.NoticeStore;
 public class NoticeStoreLogic implements NoticeStore{
 
 	@Override
-	public int insertNotice(SqlSession session, NoticeVO notice) {
+	public int insertNotice(SqlSession session, NoticeAddRequest notice) {
 		return session.insert("NoticeMapper.insertNotice",notice);
 	}
 
@@ -41,7 +43,7 @@ public class NoticeStoreLogic implements NoticeStore{
 	}
 
 	@Override
-	public int updateNotice(SqlSession session, NoticeVO notice) {
+	public int updateNotice(SqlSession session, NoticeModifyRequest notice) {
 		return session.update("NoticeMapper.updateNotice",notice);
 	}
 

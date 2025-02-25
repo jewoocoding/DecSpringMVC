@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dec.spring.common.FileUtil;
+import com.dec.spring.common.PageUtil;
+import com.dec.spring.notice.controller.dto.NoticeAddRequest;
+import com.dec.spring.notice.controller.dto.NoticeModifyRequest;
 import com.dec.spring.notice.domain.NoticeVO;
 import com.dec.spring.notice.service.NoticeService;
 
@@ -30,11 +34,15 @@ import com.dec.spring.notice.service.NoticeService;
 public class NoticeController {
 	
 	private NoticeService nService;
+	private FileUtil fileUtil;
+	private PageUtil pageUtil;
 	
 	// 생성자를 통해 의존성 주입
 	@Autowired
-	public NoticeController(NoticeService nService) {
+	public NoticeController(NoticeService nService, FileUtil fileUtil, PageUtil pageUtil) {
 		this.nService = nService;
+		this.fileUtil = fileUtil;
+		this.pageUtil = pageUtil;
 	}
 	
 //	@RequestMapping(value="/insert", method=RequestMethod.GET)
@@ -45,37 +53,31 @@ public class NoticeController {
 	
 //	@RequestMapping(value="/insert", method=RequestMethod.POST)
 	@PostMapping("/insert")
-	public String noticeInsert(@RequestParam("noticeSubject") String noticeSubject,
-								@RequestParam("noticeContent") String noticeContent,
+	public String noticeInsert(@ModelAttribute NoticeAddRequest notice,
 								@RequestParam("uploadFile") MultipartFile uploadFile,
 								HttpSession session, Model model) {
 		
 		try {
 			String noticeWriter = session.getAttribute("memberId") != null 
 					? (String)session.getAttribute("memberId") : "anonymous";
-			String noticeFilename = uploadFile.getOriginalFilename();
+			String noticeFilename = null;
 			String noticeFileRename = null;
 			String noticeFilepath = null;
+			Map<String,String> fileInfo = null;
+
+			fileInfo = fileUtil.saveFile(session, uploadFile);
+			noticeFilename = fileInfo.get("noticeFilename");
 			if(noticeFilename != null) {
-				// 중복된 파일이름을 다르게 저장하기 위한 FileRename
-				// 시간을 이용하기 위한 SimpleDateFormat
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-				// 현재 시간을 내가 원하는 패턴으로 변환
-				String transStr = sdf.format(new Date(System.currentTimeMillis())); // 202502200173811
-				// 원본 파일의 확장자 가져오기
-				String ext = noticeFilename.substring(noticeFilename.lastIndexOf(".")+1);
-				// 파일이름 변경완료
-				noticeFileRename = transStr + "." + ext;
-				noticeFilepath = "/resources/nUploadFiles/"+noticeFileRename;
-				
-				String folderPath = session.getServletContext().getRealPath("/resources/nUploadFiles");
-				String savePath = folderPath + "\\" + noticeFileRename;
-				
-				uploadFile.transferTo(new File(savePath));
+				noticeFileRename = fileInfo.get("noticeFileRename");
+				noticeFilepath = fileInfo.get("noticeFilepath");
 			}
-			
-			NoticeVO notice = new NoticeVO(noticeSubject, noticeContent, noticeWriter, noticeFilename, noticeFileRename, noticeFilepath);
-			
+//			NoticeVO notice = new NoticeVO(noticeSubject, noticeContent, noticeWriter
+//					, noticeFilename, noticeFileRename, noticeFilepath);
+			notice.setNoticeWriter(noticeWriter);
+			notice.setNoticeFilename(noticeFilename);
+			notice.setNoticeFileRename(noticeFileRename);
+			notice.setNoticeFilepath(noticeFilepath);
+
 			int result = nService.insertNotice(notice);
 
 			if(result > 0) {
@@ -101,27 +103,13 @@ public class NoticeController {
 		
 		try {
 			List<NoticeVO> nList = nService.selectList(currentPage);
-			
 			int totalCount = nService.getTotalCount();
-			int boardLimit = 10;
-			int maxPage = totalCount / boardLimit;
-			maxPage = totalCount % boardLimit != 0 ? maxPage + 1: maxPage;
-			
-			
-			int naviLimit = 5;
-			// page: 1 ~ 5, startNavi -> 1, endNavi -> 5
-			// page: 6 ~ 10, startNavi -> 6, endNavi -> 10  
-			// page: 11 ~ 15, startNavi - > 11, endNavi -> 15
-			int startNavi = ((currentPage-1)/naviLimit)*naviLimit+1;
-			int endNavi = startNavi + naviLimit -1;
-			if(endNavi > maxPage) {
-				endNavi = maxPage;
-			}
+			Map<String,Integer> pageInfo = pageUtil.generatePageInfo(totalCount, currentPage);
 			
 			if(nList != null) {
-				model.addAttribute("maxPage",maxPage);
-				model.addAttribute("startNavi",startNavi);
-				model.addAttribute("endNavi",endNavi);
+				model.addAttribute("maxPage",pageInfo.get("maxPage"));
+				model.addAttribute("startNavi",pageInfo.get("startNavi"));
+				model.addAttribute("endNavi",pageInfo.get("endNavi"));
 				
 				// 리스트 출력
 				model.addAttribute("nList",nList);
@@ -173,30 +161,31 @@ public class NoticeController {
 	
 //	@RequestMapping(value="/update", method=RequestMethod.POST)
 	@PostMapping("/update")
-	public String updateNotice(@RequestParam("noticeNo") int noticeNo
-			,@RequestParam("noticeSubject") String noticeSubject
-			,@RequestParam("noticeContent") String noticeContent
+	public String updateNotice(@ModelAttribute NoticeModifyRequest notice
 			,@RequestParam("reloadFile") MultipartFile reloadFile
 			, Model model
 			, HttpSession session) {
 		try {
-			String noticeFilename = reloadFile.getOriginalFilename();
+
+			String noticeFilename = null;
 			String noticeFileRename = null;
 			String noticeFilepath = null;
-			if(noticeFilename != null) {
-//				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
-//				String noticeFileRename = sdf.format(new Date(System.currentTimeMillis()));
-				String ext = noticeFilename.substring(noticeFilename.lastIndexOf(".")+1);
-				noticeFileRename = UUID.randomUUID()+"."+ext;
-				String folderPath = session.getServletContext().getRealPath("/resources/nUploadFiles");
-				String savePath = folderPath + "\\" + noticeFileRename;
-				reloadFile.transferTo(new File(savePath)); // 파일저장
-				noticeFilepath = "/resources/nUploadFiles/" + noticeFileRename;
+			if(reloadFile != null && !reloadFile.getOriginalFilename().isBlank()) {
+				Map<String,String> fileInfo = fileUtil.saveFile(session, reloadFile);
+				noticeFilename = fileInfo.get("noticeFilename");
+				noticeFileRename = fileInfo.get("noticeFileRename");
+				noticeFilepath = fileInfo.get("noticeFilepath");
+				
+//			NoticeVO notice = new NoticeVO(noticeNo, noticeSubject, noticeContent
+//					, noticeFilename, noticeFileRename, noticeFilepath);
+				notice.setNoticeFilename(noticeFilename);
+				notice.setNoticeFileRename(noticeFileRename);
+				notice.setNoticeFilepath(noticeFilepath);
+				
 			}
 			
-			NoticeVO notice = new NoticeVO(noticeNo, noticeSubject, noticeContent, noticeFilename, noticeFileRename, noticeFilepath);
+			int result = nService.updateNotice(notice);				
 			
-			int result = nService.updateNotice(notice);
 			if(result > 0) {
 				return "redirect:/notice/detail?noticeNo="+notice.getNoticeNo();				
 			}else {
@@ -247,18 +236,11 @@ public class NoticeController {
 			
 			// pagenation
 			int totalCount = nService.getSearchCount(paramMap);
-			int borderLimit = 10;
-			int naviLimit = 5;
-			int startNavi = (currentPage-1)/naviLimit*naviLimit +1;
-			int endNavi = startNavi + naviLimit - 1;
-			int maxPage = totalCount % borderLimit == 0 ? totalCount/borderLimit : totalCount/borderLimit+1;
+			Map<String,Integer> pageInfo = pageUtil.generatePageInfo(totalCount, currentPage);
 			
-			if(endNavi > maxPage)
-				endNavi = maxPage;
-			
-			model.addAttribute("startNavi",startNavi);
-			model.addAttribute("endNavi",endNavi);
-			model.addAttribute("maxPage",maxPage);		
+			model.addAttribute("startNavi",pageInfo.get("startNavi"));
+			model.addAttribute("endNavi",pageInfo.get("endNavi"));
+			model.addAttribute("maxPage",pageInfo.get("maxPage"));		
 			model.addAttribute("searchList",searchList);
 			model.addAttribute("searchCondition", searchCondition);
 			model.addAttribute("searchKeyword", searchKeyword);

@@ -5,11 +5,13 @@ import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
+import com.dec.spring.notice.controller.dto.NoticeAddRequest;
+import com.dec.spring.notice.controller.dto.NoticeModifyRequest;
 import com.dec.spring.notice.domain.NoticeVO;
 
 public interface NoticeStore {
 	
-	int insertNotice(SqlSession session, NoticeVO notice);
+	int insertNotice(SqlSession session, NoticeAddRequest notice);
 
 	List<NoticeVO> selectList(SqlSession session, int currentPage);
 
@@ -17,7 +19,7 @@ public interface NoticeStore {
 
 	NoticeVO selectOneByNo(SqlSession session, int noticeNo);
 
-	int updateNotice(SqlSession session, NoticeVO notice);
+	int updateNotice(SqlSession session, NoticeModifyRequest notice);
 
 	int deleteNotice(SqlSession session, int noticeNo);
 
