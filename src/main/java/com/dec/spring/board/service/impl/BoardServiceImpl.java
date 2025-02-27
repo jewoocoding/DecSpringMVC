@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dec.spring.board.controller.dto.BoardAddRequest;
 import com.dec.spring.board.domain.BoardVO;
 import com.dec.spring.board.service.BoardService;
 import com.dec.spring.board.store.BoardStore;
@@ -30,6 +31,16 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public int getTotalCount() {
 		return bStore.getTotalCount(session);
+	}
+
+	@Override
+	public int insertBoard(BoardAddRequest board) {
+		return bStore.insertBoard(session, board);
+	}
+
+	@Override
+	public BoardVO selectOneByNo(int boardNo) {
+		return bStore.selectOneByNo(session, boardNo);
 	}
 	
 }

@@ -1,24 +1,18 @@
 package com.dec.spring.notice.controller;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,19 +59,20 @@ public class NoticeController {
 			String noticeFilepath = null;
 			Map<String,String> fileInfo = null;
 
-			fileInfo = fileUtil.saveFile(session, uploadFile);
-			noticeFilename = fileInfo.get("noticeFilename");
-			if(noticeFilename != null) {
-				noticeFileRename = fileInfo.get("noticeFileRename");
-				noticeFilepath = fileInfo.get("noticeFilepath");
+			if(uploadFile != null && !uploadFile.getOriginalFilename().isBlank()) {
+				fileInfo = fileUtil.saveFile(session, uploadFile,"notice");
+				noticeFilename = fileInfo.get("nFilename");
+				noticeFileRename = fileInfo.get("nFileRename");
+				noticeFilepath = fileInfo.get("nFilepath");
+				
+				notice.setNoticeFilename(noticeFilename);
+				notice.setNoticeFileRename(noticeFileRename);
+				notice.setNoticeFilepath(noticeFilepath);
 			}
+
+			notice.setNoticeWriter(noticeWriter);
 //			NoticeVO notice = new NoticeVO(noticeSubject, noticeContent, noticeWriter
 //					, noticeFilename, noticeFileRename, noticeFilepath);
-			notice.setNoticeWriter(noticeWriter);
-			notice.setNoticeFilename(noticeFilename);
-			notice.setNoticeFileRename(noticeFileRename);
-			notice.setNoticeFilepath(noticeFilepath);
-
 			int result = nService.insertNotice(notice);
 
 			if(result > 0) {
@@ -171,19 +166,18 @@ public class NoticeController {
 			String noticeFileRename = null;
 			String noticeFilepath = null;
 			if(reloadFile != null && !reloadFile.getOriginalFilename().isBlank()) {
-				Map<String,String> fileInfo = fileUtil.saveFile(session, reloadFile);
-				noticeFilename = fileInfo.get("noticeFilename");
-				noticeFileRename = fileInfo.get("noticeFileRename");
-				noticeFilepath = fileInfo.get("noticeFilepath");
+				Map<String,String> fileInfo = fileUtil.saveFile(session, reloadFile,"notice");
+				noticeFilename = fileInfo.get("nFilename");
+				noticeFileRename = fileInfo.get("nFileRename");
+				noticeFilepath = fileInfo.get("nFilepath");
 				
-//			NoticeVO notice = new NoticeVO(noticeNo, noticeSubject, noticeContent
-//					, noticeFilename, noticeFileRename, noticeFilepath);
 				notice.setNoticeFilename(noticeFilename);
 				notice.setNoticeFileRename(noticeFileRename);
 				notice.setNoticeFilepath(noticeFilepath);
-				
 			}
 			
+//			NoticeVO notice = new NoticeVO(noticeNo, noticeSubject, noticeContent
+//					, noticeFilename, noticeFileRename, noticeFilepath);
 			int result = nService.updateNotice(notice);				
 			
 			if(result > 0) {

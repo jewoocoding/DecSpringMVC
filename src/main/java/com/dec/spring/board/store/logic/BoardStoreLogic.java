@@ -6,6 +6,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import com.dec.spring.board.controller.dto.BoardAddRequest;
 import com.dec.spring.board.domain.BoardVO;
 import com.dec.spring.board.store.BoardStore;
 
@@ -23,6 +24,16 @@ public class BoardStoreLogic implements BoardStore{
 	@Override
 	public int getTotalCount(SqlSession session) {
 		return session.selectOne("BoardMapper.getTotalCount");
+	}
+
+	@Override
+	public int insertBoard(SqlSession session, BoardAddRequest board) {
+		return session.insert("BoardMapper.insertBoard",board);
+	}
+
+	@Override
+	public BoardVO selectOneByNo(SqlSession session, int boardNo) {
+		return session.selectOne("BoardMapper.selectOneByNo",boardNo);
 	}
 
 	

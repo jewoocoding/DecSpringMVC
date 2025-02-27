@@ -23,4 +23,12 @@
 	<select id="getTotalCount" resultType="_int">
 		SELECT COUNT(*) FROM BOARD_TBL WHERE BOARD_YN = 'Y'
 	</select>
+	<insert id="insertBoard">
+		INSERT INTO BOARD_TBL VALUES(SEQ_BOARD_NO.NEXTVAL,#{boardTitle}
+		,#{boardContent},#{boardWriter},#{boardFilename},#{boardFileRename}
+		,#{boardFilepath}, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+	</insert>
+	<select id="selectOneByNo" resultMap="boardResultMap">
+		SELECT * FROM BOARD_TBL WHERE BOARD_NO = #{boardNo} AND BOARD_YN = 'Y'
+	</select>
 </mapper>

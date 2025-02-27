@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 
+import com.dec.spring.board.controller.dto.BoardAddRequest;
 import com.dec.spring.board.domain.BoardVO;
 
 public interface BoardStore {
@@ -11,5 +12,9 @@ public interface BoardStore {
 	List<BoardVO> selectBoardList(SqlSession session, int currentPage);
 
 	int getTotalCount(SqlSession session);
+
+	int insertBoard(SqlSession session, BoardAddRequest board);
+
+	BoardVO selectOneByNo(SqlSession session, int boardNo);
 
 }
