@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import com.dec.spring.board.controller.dto.BoardAddRequest;
+import com.dec.spring.board.controller.dto.BoardUpdateRequest;
 import com.dec.spring.board.domain.BoardVO;
 import com.dec.spring.board.store.BoardStore;
 
@@ -36,5 +37,14 @@ public class BoardStoreLogic implements BoardStore{
 		return session.selectOne("BoardMapper.selectOneByNo",boardNo);
 	}
 
+	@Override
+	public int deleteBoard(SqlSession session, int boardNo) {
+		return session.update("BoardMapper.deleteBoard",boardNo);
+	}
+
+	@Override
+	public int updateBoard(SqlSession session, BoardUpdateRequest board) {
+		return session.update("BoardMapper.updateBoard",board);
+	}
 	
 }

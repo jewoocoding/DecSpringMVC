@@ -17,7 +17,10 @@
 		<result property="updateDate" column="UPDATE_DATE"/>
 		<result property="boardYn" column="BOARD_YN"/>
 	</resultMap>
+	<!-- 
 	<select id="selectBoardList" resultMap="boardResultMap">
+	 -->
+	<select id="selectBoardList" resultType="Board">
 		SELECT * FROM BOARD_TBL WHERE BOARD_YN = 'Y' ORDER BY BOARD_NO DESC
 	</select>
 	<select id="getTotalCount" resultType="_int">
@@ -31,4 +34,12 @@
 	<select id="selectOneByNo" resultMap="boardResultMap">
 		SELECT * FROM BOARD_TBL WHERE BOARD_NO = #{boardNo} AND BOARD_YN = 'Y'
 	</select>
+	<update id="deleteBoard">
+		UPDATE BOARD_TBL SET BOARD_YN = 'N' WHERE BOARD_NO = #{boardNo}
+	</update>
+	<update id="updateBoard">
+		UPDATE BOARD_TBL SET BOARD_TITLE = #{boardTitle}, BOARD_CONTENT = #{boardContent},
+		BOARD_FILENAME = #{boardFilename}, BOARD_FILE_RENAME=#{boardFileRename},
+		BOARD_FILEPATH = #{boardFilepath}, UPDATE_DATE = SYSTIMESTAMP WHERE BOARD_NO = #{boardNo}
+	</update>
 </mapper>

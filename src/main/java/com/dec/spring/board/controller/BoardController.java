@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dec.spring.board.controller.dto.BoardAddRequest;
+import com.dec.spring.board.controller.dto.BoardUpdateRequest;
 import com.dec.spring.board.domain.BoardVO;
 import com.dec.spring.board.service.BoardService;
 import com.dec.spring.common.FileUtil;
@@ -92,7 +93,7 @@ public class BoardController {
 			if(result > 0) {
 				return "redirect:/board/list";				
 			}else {
-				model.addAttribute("errorMsg","게시글 등록에 실패하였습니다.");
+				model.addAttribute("errorMsg","게시글 등록에 실패하였습니다........");
 				return "common/error";
 			}
 		} catch (Exception e) {
@@ -109,6 +110,77 @@ public class BoardController {
 			BoardVO board = bService.selectOneByNo(boardNo);
 			model.addAttribute("board",board);
 			return "board/detail";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg",e.getMessage());
+			return "common/error";
+		}
+		
+	}
+	
+	@GetMapping("/delete/{boardNo}")
+	public String deleteBoard(Model model
+			,@PathVariable("boardNo") int boardNo) {
+		try {
+			int result = bService.deleteBoard(boardNo);
+			if(result > 0) {
+				return "redirect:/board/list";				
+			}else {
+				model.addAttribute("errorMsg","데이터를 삭제하지 못 했습니다...............");
+				return "common/error";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg",e.getMessage());
+			return "common/error";
+		}
+	}
+	
+	@GetMapping("/update/{boardNo}")
+	public String showBoardUpdateForm(Model model
+			,@PathVariable("boardNo") int boardNo) {
+		try {
+			BoardVO board = bService.selectOneByNo(boardNo);
+			model.addAttribute("board",board);
+			return "board/modify";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg",e.getMessage());
+			return "common/error";
+		}
+	}
+	
+	@PostMapping("/update")
+	public String updateBoard(Model model
+			,@ModelAttribute BoardUpdateRequest board
+			,@RequestParam("reloadFile") MultipartFile reloadFile
+			,HttpSession session) {
+		try {
+			
+			if(session.getAttribute("memberId") == null) {
+				model.addAttribute("errorMsg","로그인이 필요합니다!");
+				return "common/error";
+			}
+			String memberId = (String)session.getAttribute("memberId");
+			if(!memberId.equals(board.getBoardWriter())) {
+				model.addAttribute("errorMsg","자신이 작성한 글만 수정할 수 있습니다...........");
+				return "common/error";
+			}
+			if(reloadFile != null && !reloadFile.getOriginalFilename().isBlank()) {
+				Map<String,String> fileInfo = fileUtil.saveFile(session, reloadFile, "board");
+				board.setBoardFilename(fileInfo.get("bFilename"));
+				board.setBoardFileRename(fileInfo.get("bFileRename"));
+				board.setBoardFilepath(fileInfo.get("bFilepath"));						
+			}
+			
+			int result = bService.updateBoard(board);
+			if(result > 0) {
+				return "redirect:/board/detail/"+board.getBoardNo();
+			}else {
+				model.addAttribute("errorMsg","수정에 실패했습니다................");
+				return "common/error";
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg",e.getMessage());

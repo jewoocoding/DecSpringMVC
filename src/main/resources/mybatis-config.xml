@@ -16,6 +16,8 @@
 	 <settings>
 	 	<!-- NULL일 때, NULL로 인식하도록 함 -->
 	 	<setting name="jdbcTypeForNull" value="NULL"/>
+	 	<!-- DB의 _를 java의 CamelCase에 자동으로 매핑해줌 -->
+	 	<setting name="mapUnderscoreToCamelCase" value="true"/>
 	 </settings>
 	 <!-- VO가 만들어질 때마다 추가 -->
 	 <typeAliases>

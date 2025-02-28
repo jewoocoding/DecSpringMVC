@@ -3,6 +3,7 @@ package com.dec.spring.board.service;
 import java.util.List;
 
 import com.dec.spring.board.controller.dto.BoardAddRequest;
+import com.dec.spring.board.controller.dto.BoardUpdateRequest;
 import com.dec.spring.board.domain.BoardVO;
 
 public interface BoardService {
@@ -14,5 +15,9 @@ public interface BoardService {
 	int insertBoard(BoardAddRequest board);
 
 	BoardVO selectOneByNo(int boardNo);
+
+	int deleteBoard(int boardNo);
+
+	int updateBoard(BoardUpdateRequest board);
 
 }

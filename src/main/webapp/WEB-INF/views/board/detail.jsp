@@ -40,20 +40,20 @@
 		</tr>
 	</table>
 	<div>
-		<button type="button" id="modbtn" onclick="showModifyForm(${board.boardNo},${board.boardWriter });">수정하기</button>
-		<button type="button" onclick="deleteConfirm(${board.boardNo},${board.boardWriter })">삭제하기</button>
+		<button type="button" id="modbtn" onclick="showModifyForm(${board.boardNo});">수정하기</button>
+		<button type="button" onclick="deleteConfirm(${board.boardNo})">삭제하기</button>
 		<button type="button" onclick="gotoNoticeList();" >목록으로</button>
 		<button type="button" onclick="goBack();">뒤로가기</button>
 	</div>
 	<script>
-		function showModifyForm(boardNo, boardWriter) {
-			location.href = "/board/update?boardNo=" + boardNo;
+		function showModifyForm(boardNo) {
+			location.href = "/board/update/" + boardNo;
 		}
 	
-		function deleteConfirm(boardNo, boardWriter) {
-			var answer = confirm("정말 삭제하시겠습니까?");
+		function deleteConfirm(boardNo) {
+			var answer = confirm("정말로 삭제하시겠습니까??????????");
 			if(answer){
-				location.href = "/board/delete?boardNo="+boardNo;				
+				location.href = "/board/delete/"+ boardNo;				
 			}
 		}
 	

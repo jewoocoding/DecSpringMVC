@@ -49,7 +49,21 @@
 						<td>${board.boardDate }</td>
 						<td>${board.boardFilename }</td>			
 					</tr>
-				</c:forEach>			
+				</c:forEach>
+				<tr>
+					<td colspan="4" align="center">
+						<a href="/board/list?currentPage=1">맨처음</a>
+						<c:if test="${startNavi ne 1 }"><a href="/board/list?currentPage=${startNavi-1 }">이전</a></c:if>
+						<c:forEach begin="${startNavi }" end="${endNavi }" varStatus="i">
+							<a href="/board/list?currentPage=${i.index }">${i.index}</a>
+						</c:forEach>
+						<c:if test="${endNavi ne maxPage }"><a href="/board/list?currentPage=${endNavi + 1 }">다음</a></c:if>
+						<a href="/board/list?currentPage=${maxPage }">맨끝</a>						
+					</td>
+					<td>
+						<button type="button">글쓰기</button>
+					</td>
+				</tr>
 			</c:otherwise>
 		</c:choose>
 	</table>
